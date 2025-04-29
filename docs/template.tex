@@ -1,0 +1,119 @@
+% ==== Essential Mathematical and Scientific Packages ====
+% Package for mathematical symbols, equations, and AMS-specific features
+\usepackage{amsmath,amssymb,amsfonts}
+% Package for writing algorithms in pseudo-code
+\usepackage{algorithmic}
+% Package for including and manipulating graphics/images
+\usepackage{graphicx}
+% Package for special text symbols like degree signs, currency symbols
+\usepackage{textcomp}
+% Package for colored text and background
+\usepackage{xcolor}
+% Package for creating subfigures with individual captions
+\usepackage{subcaption}
+% Package for professional-looking tables with booktabs rules
+\usepackage{booktabs}
+% Package for typesetting SI units and numbers consistently
+\usepackage{siunitx}
+
+% ==== Bibliography Setup (biblatex with Harvard style) ====
+% Configure biblatex with specific settings:
+% - style=authoryear: Harvard-like citation style
+% - backend=biber: Use biber backend instead of traditional BibTeX
+% - dashed=false: Don't use dashes for repeated authors
+% - maxnames=999: Show all author names (no "et al." truncation)
+% - maxcitenames=3: Show up to 3 authors in citations
+% - giveninits=true: Use initials for given names
+% - urldate=long: Full date format for URL access dates
+% - uniquename=false: Don't disambiguate similar author names
+% - uniquelist=false: Don't disambiguate similar author lists
+\usepackage[style=authoryear, backend=biber, dashed=false, maxnames=999, maxcitenames=3, 
+    giveninits=true, urldate=long, uniquename=false, uniquelist=false]{biblatex}
+
+% Specify the bibliography database file
+\addbibresource{references.bib}
+
+% ==== Citation Format Customization ====
+% Add a comma between author name and year in citations
+\renewcommand*{\nameyeardelim}{\addcomma\space}
+
+% ==== Bibliography Entry Format Customization ====
+% Remove quotes from titles for various entry types
+\DeclareFieldFormat[article,inbook,incollection,inproceedings,patent,thesis,unpublished]{title}{#1}
+% Make journal titles italic
+\DeclareFieldFormat{journaltitle}{\emph{#1}}
+
+% Format online resources according to Harvard style
+\DeclareFieldFormat[online]{title}{\emph{#1}}
+\DeclareFieldFormat{url}{Available from: \url{#1}}
+\DeclareFieldFormat{urldate}{[Accessed #1]}
+
+% Custom driver for online entries
+\DeclareBibliographyDriver{online}{%
+  \usebibmacro{bibindex}%
+  \usebibmacro{begentry}%
+  \usebibmacro{author/editor}%
+  \setunit{\labelnamepunct}\newblock
+  \usebibmacro{date}%
+  \setunit{\addspace}\newblock
+  \usebibmacro{title}%
+  \newunit\newblock
+  \printfield{url}%
+  \setunit{\addspace}\newblock
+  \printurldate
+  \usebibmacro{finentry}%
+}
+
+% ==== Journal Entry Format Customization ====
+% Customize how journal entries are formatted:
+% - Includes journal name
+% - Handles series information
+% - Formats volume, number, and issue information
+\renewbibmacro*{journal+issuetitle}{%
+  % Print the journal name
+  \usebibmacro{journal}%
+  % Handle optional series information
+  \iffieldundef{series}
+    {}
+    {\newunit
+     \printfield{series}}%
+  % Add volume, number, and electronic ID
+  \usebibmacro{volume+number+eid}%
+  % Add comma and space before date
+  \setunit{\addcomma\space}%
+  % Add issue and date information
+  \usebibmacro{issue+date}%
+  % Add colon and space before issue number
+  \setunit{\addcolon\space}%
+  % Print the issue
+  \usebibmacro{issue}%
+  % Prepare for next unit
+  \newunit}
+
+% ==== Author Name Format Customization ====
+% Define how author names should be formatted:
+% - Family name first
+% - Given name as initials
+% - Handle prefixes (von, van, etc.) and suffixes (Jr., III, etc.)
+\DeclareNameFormat{sortname}{%
+  \nameparts{#1}%
+  \usebibmacro{name:family-given}
+    {\namepartfamily}
+    {\namepartgiveni}
+    {\namepartprefix}
+    {\namepartsuffix}%
+}
+% Apply this format as the default for all names
+\DeclareNameAlias{default}{sortname}
+
+% ==== Name List Format Customization ====
+% Define how multiple author names are separated
+% Add comma and space between multiple names
+\DeclareDelimFormat{multinamedelim}{\addcomma\space}
+% Use the same delimiter for the final name in the list
+\DeclareDelimAlias{finalnamedelim}{multinamedelim}
+
+% ==== Bibliography Printing Command ====
+% Define a custom command to print bibliography with optional parameters
+% #1 allows passing additional options to \printbibliography
+\newcommand{\printbibsection}[1][]{\printbibliography[title=References,#1]} 
